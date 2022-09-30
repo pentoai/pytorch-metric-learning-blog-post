@@ -6,12 +6,12 @@ import imageio
 import numpy as np
 from torch.utils.data import Dataset
 from tqdm.autonotebook import tqdm
-from typing import Union
+from typing import Union, Optional
 from pathlib import Path
 from torchvision import transforms
 
 
-def _add_channels(img: np.ndarray, total_channels=3):
+def _add_channels(img: np.ndarray, total_channels: int = 3) -> np.ndarray:
     while len(img.shape) < 3:  # third axis is the channels
         img = np.expand_dims(img, axis=-1)
     while (img.shape[-1]) < 3:
@@ -82,8 +82,9 @@ class TinyImageNetDataset(Dataset):
         root_dir: Path,
         mode: str = "train",
         preload: bool = True,
-        transform: transforms.Compose = None,
-        max_samples=None,
+        transform: Optional[transforms.Compose] = None,
+        max_samples: Optional[int] = None,
+        IMAGE_SHAPE: tuple = (64, 64, 3),
     ):
         tinp = TinyImageNetPaths(root_dir)
         self.mode = mode
@@ -92,7 +93,7 @@ class TinyImageNetDataset(Dataset):
         self.transform = transform
         self.transform_results = dict()
 
-        self.IMAGE_SHAPE = (64, 64, 3)
+        self.IMAGE_SHAPE = IMAGE_SHAPE
 
         self.img_data = []
         self.label_data = []
@@ -101,7 +102,7 @@ class TinyImageNetDataset(Dataset):
         self.samples = tinp.paths[mode]
         self.samples_num = len(self.samples)
 
-        if self.max_samples is not None:
+        if self.max_samples:
             self.samples_num = min(self.max_samples, self.samples_num)
             self.samples = np.random.permutation(self.samples)[: self.samples_num]
 

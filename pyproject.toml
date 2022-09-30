@@ -2,7 +2,7 @@
 name = "pytorch-metric-learning-blog"
 version = "0.1.0"
 description = "Resources needed in PML blog"
-authors = []
+authors = ["Pento <hello@pento.ai>"]
 packages = []
 
 [tool.poetry.dependencies]
