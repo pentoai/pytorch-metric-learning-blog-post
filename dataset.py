@@ -1,20 +1,19 @@
 import os
 from collections import defaultdict
-from xmlrpc.client import Boolean
+from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import imageio
 import numpy as np
 from torch.utils.data import Dataset
-from tqdm.autonotebook import tqdm
-from typing import Union, Optional
-from pathlib import Path
 from torchvision import transforms
+from tqdm.autonotebook import tqdm
 
 
 def _add_channels(img: np.ndarray, total_channels: int = 3) -> np.ndarray:
-    while len(img.shape) < 3:  # third axis is the channels
+    for _ in range(3 - len(img.shape)):
         img = np.expand_dims(img, axis=-1)
-    while (img.shape[-1]) < 3:
+    for _ in range(total_channels - img.shape[-1]):
         img = np.concatenate([img, img[:, :, -1:]], axis=-1)
     return img
 
@@ -84,7 +83,7 @@ class TinyImageNetDataset(Dataset):
         preload: bool = True,
         transform: Optional[transforms.Compose] = None,
         max_samples: Optional[int] = None,
-        IMAGE_SHAPE: tuple = (64, 64, 3),
+        IMAGE_SHAPE: Tuple = (64, 64, 3),
     ):
         tinp = TinyImageNetPaths(root_dir)
         self.mode = mode
